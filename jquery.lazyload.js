@@ -100,19 +100,18 @@
 
 	    /* The appear event fires one time when image appears in viewport */
 	    $self.one("appear", function() {
-		if (settings.appear) {
-		    var elements_left = elements.length;
-		    settings.appear.call(self, elements_left, settings);
-		}
+		this.appeared = true;
+		if (settings.appear)
+		    settings.appear.call(self, elements.length, settings);
+		/* Remove image from array so it is not looped next time. */
+		elements = $($.grep(elements, function(element) { return !element.loaded || !element.appeared; }));
 	    });
 
             /* When toload is triggered load original image. */
             $self.one("toload", function() {
                 if (!this.loaded) {
-                    if (settings.toload) {
-                        var elements_left = elements.length;
-                        settings.toload.call(self, elements_left, settings);
-                    }
+                    if (settings.toload)
+                        settings.toload.call(self, elements.length, settings);
                     $("<img />")
                         .bind("load", function() {
 
@@ -128,15 +127,10 @@
                             self.loaded = true;
 
                             /* Remove image from array so it is not looped next time. */
-                            var temp = $.grep(elements, function(element) {
-                                return !element.loaded;
-                            });
-                            elements = $(temp);
+                            elements = $($.grep(elements, function(element) { return !element.loaded || !element.appeared; }));
 
-                            if (settings.load) {
-                                var elements_left = elements.length;
-                                settings.load.call(self, elements_left, settings);
-                            }
+                            if (settings.load)
+                                settings.load.call(self, elements.length, settings);
                         })
                         .attr("src", $self.attr("data-" + settings.data_attribute));
                 }
