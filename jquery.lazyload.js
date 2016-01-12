@@ -47,9 +47,7 @@
                 } else if (!$.belowthefold(this, settings) &&
                     !$.rightoffold(this, settings)) {
 			if ( $.inviewport(this, {threshold : 0}) )
-			{
 			    $this.trigger("appear");
-			}
                         $this.trigger("toload");
                         /* if we found an image we'll load, reset the counter */
                         counter = 0;
@@ -100,6 +98,7 @@
                 }
             }
 
+	    /* The appear event fires one time when image appears in viewport */
 	    $self.one("appear", function() {
 		if (settings.appear) {
 		    var elements_left = elements.length;
