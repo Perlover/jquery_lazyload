@@ -46,10 +46,7 @@
                         /* Nothing. */
                 } else if (!$.belowthefold(this, settings) &&
                     !$.rightoffold(this, settings)) {
-			if ( !$.abovethetop(this, {threshold : 0}) &&
-			     !$.leftofbegin(this, {threshold : 0}) &&
-			     !$.belowthefold(this, {threshold : 0}) &&
-			     !$.rightoffold(this, {threshold : 0}) )
+			if ( $.inviewport(this, {threshold : 0}) )
 			{
 			    $this.trigger("appear");
 			}
