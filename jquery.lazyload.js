@@ -27,6 +27,7 @@
             container       : window,
             data_attribute  : "original",
             skip_invisible  : false,
+            toload          : null,
             appear          : null,
             load            : null,
             placeholder     : "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAAAXNSR0IArs4c6QAAAARnQU1BAACxjwv8YQUAAAAJcEhZcwAADsQAAA7EAZUrDhsAAAANSURBVBhXYzh8+PB/AAffA0nNPuCLAAAAAElFTkSuQmCC"
@@ -45,7 +46,14 @@
                         /* Nothing. */
                 } else if (!$.belowthefold(this, settings) &&
                     !$.rightoffold(this, settings)) {
-                        $this.trigger("appear");
+			if ( !$.abovethetop(this, {threshold : 0}) &&
+			     !$.leftofbegin(this, {threshold : 0}) &&
+			     !$.belowthefold(this, {threshold : 0}) &&
+			     !$.rightoffold(this, {threshold : 0}) )
+			{
+			    $this.trigger("appear");
+			}
+                        $this.trigger("toload");
                         /* if we found an image we'll load, reset the counter */
                         counter = 0;
                 } else {
@@ -95,12 +103,19 @@
                 }
             }
 
-            /* When appear is triggered load original image. */
-            $self.one("appear", function() {
+	    $self.one("appear", function() {
+		if (settings.appear) {
+		    var elements_left = elements.length;
+		    settings.appear.call(self, elements_left, settings);
+		}
+	    });
+
+            /* When toload is triggered load original image. */
+            $self.one("toload", function() {
                 if (!this.loaded) {
-                    if (settings.appear) {
+                    if (settings.toload) {
                         var elements_left = elements.length;
-                        settings.appear.call(self, elements_left, settings);
+                        settings.toload.call(self, elements_left, settings);
                     }
                     $("<img />")
                         .bind("load", function() {
@@ -132,11 +147,11 @@
             });
 
             /* When wanted event is triggered load original image */
-            /* by triggering appear.                              */
+            /* by triggering toload.                              */
             if (0 !== settings.event.indexOf("scroll")) {
                 $self.bind(settings.event, function() {
                     if (!self.loaded) {
-                        $self.trigger("appear");
+                        $self.trigger("toload");
                     }
                 });
             }
@@ -153,7 +168,7 @@
             $window.bind("pageshow", function(event) {
                 if (event.originalEvent && event.originalEvent.persisted) {
                     elements.each(function() {
-                        $(this).trigger("appear");
+                        $(this).trigger("toload");
                     });
                 }
             });
