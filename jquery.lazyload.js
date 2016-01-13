@@ -46,7 +46,7 @@
                         /* Nothing. */
                 } else if (!$.belowthefold(this, settings) &&
                     !$.rightoffold(this, settings)) {
-			if ( $.inviewport(this, {threshold : 0}) )
+			if ( $.fullviewinviewport(this, settings) )
 			    $this.trigger("fullview");
                         $this.trigger("appear");
                         /* if we found an image we'll load, reset the counter */
