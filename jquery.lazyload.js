@@ -98,10 +98,8 @@
             /* When appear is triggered load original image. */
             $self.one("appear", function() {
                 if (!this.loaded) {
-                    if (settings.appear) {
-                        var elements_left = elements.length;
-                        settings.appear.call(self, elements_left, settings);
-                    }
+                    if (settings.appear)
+                        settings.appear.call(self, elements.length, settings);
                     $("<img />")
                         .bind("load", function() {
 
@@ -117,15 +115,10 @@
                             self.loaded = true;
 
                             /* Remove image from array so it is not looped next time. */
-                            var temp = $.grep(elements, function(element) {
-                                return !element.loaded;
-                            });
-                            elements = $(temp);
+                            elements = $($.grep(elements, function(element) { return !element.loaded }));
 
-                            if (settings.load) {
-                                var elements_left = elements.length;
-                                settings.load.call(self, elements_left, settings);
-                            }
+                            if (settings.load)
+                                settings.load.call(self, elements.length, settings);
                         })
                         .attr("src", $self.attr("data-" + settings.data_attribute));
                 }
@@ -228,15 +221,15 @@
     /* $("img").filter(":below-the-fold").something() which is faster */
 
     $.extend($.expr[":"], {
-        "below-the-fold" : function(a) { return $.belowthefold(a, {threshold : 0}); },
-        "above-the-top"  : function(a) { return !$.belowthefold(a, {threshold : 0}); },
-        "right-of-screen": function(a) { return $.rightoffold(a, {threshold : 0}); },
-        "left-of-screen" : function(a) { return !$.rightoffold(a, {threshold : 0}); },
-        "in-viewport"    : function(a) { return $.inviewport(a, {threshold : 0}); },
+        "below-the-fold" : function(a) { return $.belowthefold(a, $.extend({}, settings, {threshold : 0})); },
+        "above-the-top"  : function(a) { return !$.belowthefold(a, $.extend({}, settings, {threshold : 0}); },
+        "right-of-screen": function(a) { return $.rightoffold(a, $.extend({}, settings, {threshold : 0}); },
+        "left-of-screen" : function(a) { return !$.rightoffold(a, $.extend({}, settings, {threshold : 0}); },
+        "in-viewport"    : function(a) { return $.inviewport(a, $.extend({}, settings, {threshold : 0}); },
         /* Maintain BC for couple of versions. */
-        "above-the-fold" : function(a) { return !$.belowthefold(a, {threshold : 0}); },
-        "right-of-fold"  : function(a) { return $.rightoffold(a, {threshold : 0}); },
-        "left-of-fold"   : function(a) { return !$.rightoffold(a, {threshold : 0}); }
+        "above-the-fold" : function(a) { return !$.belowthefold(a, $.extend({}, settings, {threshold : 0}); },
+        "right-of-fold"  : function(a) { return $.rightoffold(a, $.extend({}, settings, {threshold : 0}); },
+        "left-of-fold"   : function(a) { return !$.rightoffold(a, $.extend({}, settings, {threshold : 0}); }
     });
 
 })(jQuery, window, document);
